@@ -1,6 +1,6 @@
 Cisco TAC First Responder script for Cisco Telemetry Broker.
 
-This hosted script aids in the generation, compression, and trannsmission of a Cisco Telemetry Broker mayday file. 
+This hosted script aids in the generation, compression, and transmission of a Cisco Telemetry Broker mayday file. 
 
 Example output:
 ```
