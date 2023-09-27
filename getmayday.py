@@ -2,7 +2,7 @@
 
 __author__ = "CTB TAC First Responders"
 __copyright__ = "Copyright 2023, Cisco Systems Inc."
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 __status__ = "Production"
 
 from datetime import datetime, timezone
@@ -72,7 +72,7 @@ def upload_file(case, token, f_name):
                 response.raise_for_status()
                 print_log(f"`{f_name}` was uploaded to {case}", screen=True, log=True, color="green", level="info")
         except requests.HTTPError as rqst_err:
-            print_log(f"[FAILURE] Failed to upload `{f_name}` to {case} with token {token}.", screen=True, color="red" )
+            print_log(f"[FAILURE] Failed to upload `{f_name}` to {case} with token {token} using requests.", screen=True, color="red" )
             print_log(f"HTTP error:\n----------\n{rqst_err}\n----------", log=True, level="warning" )
             exit()
         except FileNotFoundError as file_err:
@@ -84,12 +84,12 @@ def upload_file(case, token, f_name):
         try:
             output = subprocess.check_output(command)
             if output:
-                print_log(f"[FAILURE] (cURL) Failed to upload to {case} with token {token}.", screen=True, color="red")
+                print_log(f"[FAILURE] (cURL) Failed to upload to {case} with token {token} using cURL.", screen=True, color="red")
                 print_log(f"Process error:\n----------\n{output}\n----------", log=True, level="warning")
                 exit()
             print_log(f"(cURL) `{f_name}` was uploaded to {case}.", screen=True, log=True, color="green", level="info")
         except subprocess.CalledProcessError as e:
-            print_log(f"[FAILURE] Failed to upload `{f_name}` to {case} with token {token}.", screen=True, color="red")
+            print_log(f"[FAILURE] Failed to upload `{f_name}` to {case} with token {token} using cURL.", screen=True, color="red")
             print_log(f"Process error:\n----------\n{e}\n----------", log=True, level="warning")
             print_log("Notify Cisco TAC of Failure to upload for further assistance", log=True, level="warning")
             exit()
