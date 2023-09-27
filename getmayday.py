@@ -2,7 +2,7 @@
 
 __author__ = "CTB TAC First Responders"
 __copyright__ = "Copyright 2023, Cisco Systems Inc."
-__version__ = "1.0.2"
+__version__ = "1.1"
 __status__ = "Production"
 
 from datetime import datetime, timezone
@@ -61,22 +61,21 @@ def make_mayday_file():
     mayday_filename = make_filename()
     subprocess.run(["/opt/titan/bin/mayday","-o",f"/tmp/{mayday_filename}"])
 
+
 def upload_file(case, token, f_name):
     if rqst_avail:
         try:
             with open(f_name, "rb") as data:
-                response = requests.put(
-                    f"https://cxd.cisco.com/home/{f_name}",
-                    data=data, auth=requests.auth.HTTPBasicAuth(case, token),
-                    headers={"accept": "application/json"})
+                file_name = os.path.basename(f_name)
+                response = requests.put(f"https://cxd.cisco.com/home/{file_name}", data=data, auth=requests.auth.HTTPBasicAuth(case, token), headers={"accept": "*/*"})
                 response.raise_for_status()
-                print_log(f"`{f_name}` was uploaded to {case}", screen=True, log=True, color="green", level="info")
+                print_log(f"`{file_name}` successfully uploaded to {case}", screen=True, log=True, color="green", level="info")
         except requests.HTTPError as rqst_err:
-            print_log(f"[FAILURE] Failed to upload `{f_name}` to {case} with token {token} using requests.", screen=True, color="red" )
-            print_log(f"HTTP error:\n----------\n{rqst_err}\n----------", log=True, level="warning" )
+            print_log(f"[FAILURE] Failed to upload Failed to upload `{file_name}` to {case} with token {token} using requests.", screen=True, color="red" )
+            print_log(f"Upload Failed with the following HTTP error:\n----------\n{rqst_err}\n----------", log=True, level="warning" )
             exit()
         except FileNotFoundError as file_err:
-            print_log(f"[FAILURE] Failed to upload to {case}.", screen=True, log=True, color="red", level="warning")
+            print_log(f"[FAILURE] FileNotFound Failed to upload `{file_name}` to {case} with token {token} using requests.", screen=True, log=True, color="red", level="warning")
             print_log(f"File Error {file_err}")
             exit()
     else:
@@ -84,13 +83,13 @@ def upload_file(case, token, f_name):
         try:
             output = subprocess.check_output(command)
             if output:
-                print_log(f"[FAILURE] (cURL) Failed to upload to {case} with token {token} using cURL.", screen=True, color="red")
-                print_log(f"Process error:\n----------\n{output}\n----------", log=True, level="warning")
+                print_log(f"[FAILURE] (cURL) Failed to upload `{file_name}` to {case} with token {token} using cURL.", screen=True, color="red")
+                print_log(f"(cURL) Upload Failed with the following curl error:\n----------\n{output}\n----------", log=True, level="warning")
                 exit()
-            print_log(f"(cURL) `{f_name}` was uploaded to {case}.", screen=True, log=True, color="green", level="info")
+            print_log(f"(cURL) `{file_name}` successfully uploaded to {case} with token {token} using cURL.", screen=True, log=True, color="green", level="info")
         except subprocess.CalledProcessError as e:
-            print_log(f"[FAILURE] Failed to upload `{f_name}` to {case} with token {token} using cURL.", screen=True, color="red")
-            print_log(f"Process error:\n----------\n{e}\n----------", log=True, level="warning")
+            print_log(f"[FAILURE] Failed to upload `{file_name}` to {case} with token {token} using cURL.", screen=True, color="red")
+            print_log(f"Upload failed with the following subprocess error:\n----------\n{e}\n----------", log=True, level="warning")
             print_log("Notify Cisco TAC of Failure to upload for further assistance", log=True, level="warning")
             exit()
 
