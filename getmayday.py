@@ -2,7 +2,7 @@
 
 __author__ = "CTB TAC First Responders"
 __copyright__ = "Copyright 2023, Cisco Systems Inc."
-__version__ = "1.0"
+__version__ = "1.0.1"
 __status__ = "Production"
 
 from datetime import datetime, timezone
@@ -49,7 +49,11 @@ def make_filename():
     serial = "tr -d '[:space:]' < /sys/class/dmi/id/product_serial"
     get_model = check_output(model, shell=True, text=True).strip()
     get_serial = check_output(serial, shell=True, text=True).strip()
-    filename = f"mayday-{get_model}-{get_serial}.{curdate}.tar.gz"
+    filename = f"mayday-{get_model}-{get_serial}.{curdate}"
+    if args.command == "upload":
+        filename += "_ctbfr.tar.gz"
+    else:
+        filename += ".tar.gz"
     return filename
 
 def make_mayday_file():
